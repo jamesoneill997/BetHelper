@@ -13,13 +13,38 @@ class EPL:
 		return soupdata
 
 
+	#optimisation on print required - None type printing at end of list, goal difference needs to work
 	def get_table(self):
-		soup = self.make_soup("https://www.premierleague.com.tables")
+		#lists to store data
+		teams = []
+		points = []
+		table_entry = []
 
-		for team_position in soup.findAll("tr", {"class":"tableDark"}):
-			return team_position.text
+		#posts request to server
+		soup = self.make_soup("https://www.premierleague.com/tables")
+		
+		#team names
+		for team in soup.findAll("span", {"class" : "long"}):
+			teams.append(team.text)
+		
+		#ensures tot_teams == 20
+		teams = teams[:20]
 
+		#points total
+		for points_tot in soup.findAll("td", {"class" : "points"}):
+			points.append(points_tot.text)
 
+		#tot_teams == num_points_totals
+		points = points[:20]
+
+		#Note to developer: Get goal difference to work
+
+		#compile the above into one element of a list
+		for i in range(19):
+			table_entry.append(teams[i] + " " + str(points[i]))
+
+		for entry in table_entry:
+			print(entry)
 
 
 def main():
@@ -41,7 +66,7 @@ TO DO:
 
 	def get_fixtures(team = None):
 
-	def get_odds():
+	def get_odds(team):
 
 	def make_acca(match_result):
 
