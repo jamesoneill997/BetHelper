@@ -1,19 +1,29 @@
-import urllib
-import urllib.request
 from bs4 import BeautifulSoup
 import string
+import requests
 
 
 class EPL:
 
 	#function to easily utilise the BS4 module
 	def make_soup(self, url):
-		open_page = urllib.request.urlopen(url)
+		open_page = requests.get(url).text
 		soupdata = BeautifulSoup(open_page,'html.parser')
 		return soupdata
 
+	def get_teams(self):
+		teams = []
+		soup = self.make_soup("https://www.premierleague.com/tables")
+		
+		#team names
+		for team in soup.findAll("span", {"class" : "long"}):
+			teams.append(team.text)
+		teams = teams[:20]
 
-	#optimisation on print required - None type printing at end of list, goal difference needs to work
+		return teams
+
+
+	#optimisation on print required goal difference needs to work
 	def get_table(self):
 		#lists to store data
 		teams = []
@@ -23,12 +33,10 @@ class EPL:
 		#posts request to server
 		soup = self.make_soup("https://www.premierleague.com/tables")
 		
-		#team names
-		for team in soup.findAll("span", {"class" : "long"}):
-			teams.append(team.text)
+		#team names - Using previous function
+		for team in self.get_teams():
+			teams.append(team)
 		
-		#ensures tot_teams == 20
-		teams = teams[:20]
 
 		#points total
 		for points_tot in soup.findAll("td", {"class" : "points"}):
@@ -46,10 +54,26 @@ class EPL:
 		for entry in table_entry:
 			print(entry)
 
+		
+
+
+	def get_game_weeks(self, team = None, week = None):
+		game_weeks = []
+		team_game_weeks = []
+		soup = self.make_soup("https://www.cbssports.com/soccer/news/premier-league-game_weeks-results-schedule-scores-liverpool-alone-in-first-manchester-united-and-chelsea-struggle/")
+
+		for week in soup.findAll("h3"):
+			game_weeks.append(week.text)
+
+		#some tidying up
+		game_weeks = game_weeks[:35]
+
+					
+
 
 def main():
 	epl = EPL()
-	print(epl.get_table())
+	epl.get_table()
 
 if __name__ == '__main__':
 	main()
@@ -63,8 +87,6 @@ if __name__ == '__main__':
 TO DO:
 
 	
-
-	def get_fixtures(team = None):
 
 	def get_odds(team):
 
@@ -82,7 +104,11 @@ TO DO:
 
 	def get_cards():
 
+	def add_to_calendar():
 
+	def add_to_my_games():
+
+	
 
 
 """
